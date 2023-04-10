@@ -1,14 +1,11 @@
-pub fn add(left: usize, right: usize) -> usize {
-    left + right
-}
+mod union_find;
 
-#[cfg(test)]
-mod tests {
-    use super::*;
+use std::marker::PhantomData;
 
-    #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
-    }
+type Token<'tk> = PhantomData<*mut &'tk ()>;
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct Id<'tk> {
+    val: u32,
+    _token: Token<'tk>,
 }
