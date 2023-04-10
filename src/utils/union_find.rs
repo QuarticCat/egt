@@ -1,16 +1,15 @@
 use crate::{Id, Token};
 
-#[derive(Debug, Clone, Default)]
+#[derive(Debug, Default)]
 pub struct UnionFind<'tk> {
     parents: Vec<Id<'tk>>,
-    _token: Token<'tk>,
 }
 
 impl<'tk> UnionFind<'tk> {
     pub fn make_set(&mut self) -> Id<'tk> {
         let id = Id {
             val: self.parents.len() as _,
-            _token: self._token,
+            _token: Token::default(),
         };
         self.parents.push(id);
         id

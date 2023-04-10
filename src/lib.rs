@@ -1,4 +1,7 @@
-mod union_find;
+mod eclass;
+mod egraph;
+mod enode;
+mod utils;
 
 use std::marker::PhantomData;
 
