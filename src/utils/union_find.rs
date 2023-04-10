@@ -1,4 +1,4 @@
-use crate::{Id, Token};
+use crate::Id;
 
 #[derive(Debug, Default)]
 pub struct UnionFind<'tk> {
@@ -6,19 +6,6 @@ pub struct UnionFind<'tk> {
 }
 
 impl<'tk> UnionFind<'tk> {
-    pub fn make_set(&mut self) -> Id<'tk> {
-        let id = Id {
-            val: self.parents.len() as _,
-            _token: Token::default(),
-        };
-        self.parents.push(id);
-        id
-    }
-
-    pub fn size(&self) -> usize {
-        self.parents.len()
-    }
-
     fn parent(&self, id: Id<'tk>) -> Id<'tk> {
         unsafe { *self.parents.get_unchecked(id.val as usize) }
     }
@@ -27,16 +14,18 @@ impl<'tk> UnionFind<'tk> {
         unsafe { self.parents.get_unchecked_mut(id.val as usize) }
     }
 
-    pub fn find(&self, mut id: Id<'tk>) -> Id<'tk> {
-        while id != self.parent(id) {
-            id = self.parent(id)
-        }
+    pub fn add(&mut self) -> Id<'tk> {
+        let id = Id {
+            val: self.parents.len() as _,
+            _tk: Default::default(),
+        };
+        self.parents.push(id);
         id
     }
 
-    pub fn find_mut(&mut self, mut id: Id<'tk>) -> Id<'tk> {
+    pub fn find(&mut self, mut id: Id<'tk>) -> Id<'tk> {
         if id != self.parent(id) {
-            *self.parent_mut(id) = self.find_mut(self.parent(id));
+            *self.parent_mut(id) = self.find(self.parent(id));
         }
         self.parent(id)
     }
