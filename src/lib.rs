@@ -1,6 +1,4 @@
-mod eclass;
 mod egraph;
-mod enode;
 mod utils;
 
 pub use egraph::EGraph;

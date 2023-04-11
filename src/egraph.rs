@@ -1,13 +1,28 @@
-use crate::eclass::EClass;
-use crate::enode::ENode;
 use crate::utils::{HashMap, UnionFind};
 use crate::Id;
+use std::hash::Hash;
+
+pub trait ENode<'tk>: Hash + Eq + Clone {
+    fn children(&self) -> &[Id<'tk>];
+
+    fn children_mut(&mut self) -> &mut [Id<'tk>];
+}
+
+#[derive(Debug)]
+pub struct EClass<'tk, N> {
+    pub enodes: Vec<N>,
+    // (uncanon e-node, uncanon id)
+    pub parents: Vec<(N, Id<'tk>)>,
+}
 
 #[derive(Debug, Default)]
 pub struct EGraph<'tk, N> {
     union_find: UnionFind<'tk>,
+    // canon e-node -> uncanon id
     memo: HashMap<N, Id<'tk>>,
+    // canon id -> e-class
     eclasses: HashMap<Id<'tk>, EClass<'tk, N>>,
+    // (uncanon e-node, uncanon id)
     pending: Vec<(N, Id<'tk>)>,
 }
 
