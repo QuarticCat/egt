@@ -2,4 +2,9 @@ mod union_find;
 
 pub use union_find::*;
 
-pub type HashMap<K, V> = rustc_hash::FxHashMap<K, V>;
+use rustc_hash::FxHasher;
+use std::hash::BuildHasherDefault;
+
+type FxHashBuilder = BuildHasherDefault<FxHasher>;
+
+pub type HashMap<K, V> = hashbrown::HashMap<K, V, FxHashBuilder>;

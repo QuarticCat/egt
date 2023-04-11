@@ -23,15 +23,15 @@ impl<'tk> UnionFind<'tk> {
         id
     }
 
-    pub fn find(&mut self, mut id: Id<'tk>) -> Id<'tk> {
+    pub fn find(&mut self, id: Id<'tk>) -> Id<'tk> {
         if id != self.parent(id) {
             *self.parent_mut(id) = self.find(self.parent(id));
         }
         self.parent(id)
     }
 
-    pub fn union(&mut self, root1: Id<'tk>, root2: Id<'tk>) -> Id<'tk> {
-        *self.parent_mut(root2) = root1;
-        root1
+    pub fn union(&mut self, cid1: Id<'tk>, cid2: Id<'tk>) -> Id<'tk> {
+        *self.parent_mut(cid2) = cid1;
+        cid1
     }
 }
