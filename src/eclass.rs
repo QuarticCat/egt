@@ -1,5 +1,7 @@
+use crate::Id;
+
 #[derive(Debug)]
-pub struct EClass<N> {
+pub struct EClass<'tk, N> {
     pub enodes: Vec<N>,
-    pub parents: Vec<N>,
+    pub parents: Vec<(N, Id<'tk>)>,
 }
