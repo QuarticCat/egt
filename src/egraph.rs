@@ -2,7 +2,7 @@ use crate::utils::{HashMap, UnionFind};
 use crate::Id;
 use std::hash::Hash;
 
-pub trait ENode<'tk>: Hash + Eq + Clone {
+pub trait ENode<'tk>: Hash + Ord + Eq + Clone {
     fn children(&self) -> &[Id<'tk>];
 
     fn children_mut(&mut self) -> &mut [Id<'tk>];
@@ -10,6 +10,7 @@ pub trait ENode<'tk>: Hash + Eq + Clone {
 
 #[derive(Debug)]
 pub struct EClass<'tk, N> {
+    // canon e-node
     pub enodes: Vec<N>,
     // (uncanon e-node, uncanon id)
     pub parents: Vec<(N, Id<'tk>)>,
@@ -36,8 +37,8 @@ impl<'tk, N: ENode<'tk>> EGraph<'tk, N> {
     pub fn add(&mut self, mut enode: N) -> Id<'tk> {
         self.canonicalize(&mut enode);
 
-        if let Some(existing_id) = self.memo.get(&enode) {
-            *existing_id
+        if let Some(memo_id) = self.memo.get(&enode) {
+            *memo_id
         } else {
             let cid = self.union_find.add();
 
@@ -81,5 +82,25 @@ impl<'tk, N: ENode<'tk>> EGraph<'tk, N> {
         }
         eclass1.enodes.extend(eclass2.enodes);
         eclass1.parents.extend(eclass2.parents);
+    }
+
+    pub fn rebuild(&mut self) {
+        while let Some((mut enode, id)) = self.pending.pop() {
+            self.memo.remove(&enode);
+            self.canonicalize(&mut enode);
+            if let Some(memo_id) = self.memo.insert(enode, id) {
+                self.union(memo_id, id);
+            }
+        }
+
+        for eclass in self.eclasses.values_mut() {
+            for enode in eclass.enodes.iter_mut() {
+                for id in enode.children_mut() {
+                    *id = self.union_find.find(*id);
+                }
+            }
+            eclass.enodes.sort_unstable();
+            eclass.enodes.dedup();
+        }
     }
 }
